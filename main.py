@@ -23,7 +23,7 @@ test_token = key_pair.create_token(
 
 print(f"Test token: {test_token}")
 
-mcp = FastMCP()
+mcp = FastMCP(auth=verifier)
 
 @mcp.custom_route("/token", methods=["GET"])
 def get_token(request: Request) -> JSONResponse:
