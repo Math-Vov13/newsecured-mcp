@@ -1,6 +1,6 @@
 from fastmcp import FastMCP
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import PlainTextResponse
 from fastmcp.server.auth.providers.jwt import JWTVerifier, RSAKeyPair
 
 # Generate a key pair for testing
@@ -13,21 +13,19 @@ verifier = JWTVerifier(
     audience="test-mcp-server"
 )
 
-# Generate a test token using the private key
-test_token = key_pair.create_token(
-    subject="test-user-123",
-    issuer="https://test.yourcompany.com", 
-    audience="test-mcp-server",
-    scopes=["read", "write", "admin"]
-)
-
-print(f"Test token: {test_token}")
 
 mcp = FastMCP(auth=verifier)
 
 @mcp.custom_route("/token", methods=["GET"])
-def get_token(request: Request) -> JSONResponse:
-    return JSONResponse({"token": test_token})
+def get_token(request: Request) -> PlainTextResponse:
+    # Generate a test token using the private key
+    test_token = key_pair.create_token(
+        subject="test-user-123",
+        issuer="https://test.yourcompany.com", 
+        audience="test-mcp-server",
+        scopes=["read", "write", "admin"]
+    )
+    return PlainTextResponse(test_token)
 
 @mcp.tool
 def echo_tool(message: str) -> str:
